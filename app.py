@@ -7,6 +7,8 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.fsm.context import FSMContext
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from aiogram.client.default import DefaultBotProperties
+from aiogram.enums import ParseMode
 
 # === ENV ===
 BOT_TOKEN = os.getenv("BOT_TOKEN")
@@ -38,8 +40,11 @@ if os.path.exists(PR_PATH):
 else:
     PR = DEFAULT_PR
 
-# === Bot ===
-bot = Bot(BOT_TOKEN, parse_mode="HTML")
+# === Bot (aiogram 3.7+ requires DefaultBotProperties for parse_mode) ===
+bot = Bot(
+    token=BOT_TOKEN,
+    default=DefaultBotProperties(parse_mode=ParseMode.HTML)
+)
 dp = Dispatcher(storage=MemoryStorage())
 
 CITIES = list(PR["cities"].keys())
@@ -53,7 +58,7 @@ def kb(opts):
         resize_keyboard=True
     )
 
-def money(x): 
+def money(x):
     return f"{math.ceil(x)} BYN"
 
 def calc_quote(city, work, qty, length, drilling, height_label, urgency_label, km_out):
